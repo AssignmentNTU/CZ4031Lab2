@@ -21,7 +21,7 @@ class DatabasePostgresql:
 
         #then need to create dictionary with title as it's key
         for key in savedDictionary.keys():
-            listName = key.split(".")
+            listName = key.split("|")
             listTitleNow = set(savedDictionary[key])
             for title in listTitleNow:
                 listNameToBeSaved = set()
@@ -35,7 +35,6 @@ class DatabasePostgresql:
 
     def fillTheDictionary(self,r,listName,savedDictionary):
         n = len(listName)
-        r = 2  # 2 combination
         listNameAdded = [None]*n
         startIndex = 0
         current = 0
@@ -44,7 +43,7 @@ class DatabasePostgresql:
         for i in range(len(arraySaved)):
             key = ""
             for j in range(len(arraySaved[i])):
-                key += arraySaved[i][j] + "."
+                key += arraySaved[i][j] + "|"
             key = key[0:len(key) - 1]
             listName = self.getKeyName(key)
             first = listName[0]
@@ -54,14 +53,20 @@ class DatabasePostgresql:
 
     def getKeyName(self,nameCombi):
         #edward.sujono
-        listCombination = nameCombi.split(".")
+        listCombination = nameCombi.split("|")
         first = ""
         second = ""
+        if(len(listCombination) <= 2):
+            first = listCombination[0]
+            second = listCombination[1]
+            answer = [first, second]
+            return answer
         for i in range(len(listCombination)-1):
             name = listCombination[i]
-            first += (name+".")
+            first += (name+"|")
         first = first[0:len(first)-1]
-        second = listCombination[len(listCombination)-1]
+        second = listCombination[len(listCombination)-2]+"|"+listCombination[len(listCombination)-1]
+
         answer = [first,second]
         return answer;
 
