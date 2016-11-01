@@ -1,2 +1,3 @@
 graphviz
 psycopg2
+pygresql

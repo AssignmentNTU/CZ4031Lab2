@@ -1,4 +1,5 @@
 import psycopg2
+#option 2 using PyGreSql
 
 class DatabasePostgresql:
 
@@ -9,12 +10,19 @@ class DatabasePostgresql:
         except:
             print "I am unable to connect to the database"
 
+    def processListOfName(self,listName):
+        listNameReturn = []
+        for name in listName:
+            nameChanges = name.replace("'","''")
+            listNameReturn.append(nameChanges)
+        return listNameReturn
+
     #listName is all the author name that you want to search the relation on
     def execute(self,listName):
         savedDictionary = {}
         returnDictionary = {}
         for name in listName:
-            savedDictionary[name] = self.getListTitleForParticularAuthor(name)
+            savedDictionary[name] = self.getListTitleForParticularAuthor(name,test=False)
 
         for i in range(2,len(listName)+1):
             self.fillTheDictionary(i,listName,savedDictionary)
@@ -71,11 +79,10 @@ class DatabasePostgresql:
         return answer;
 
 
-    def getListTitleForParticularAuthor(self,name):
+    def getListTitleForParticularAuthor(self,name,test):
         listToBeSaved = []
         cur = self.conn.cursor()
-        query = "SELECT title FROM PUBLICATION_COMPLETE where author_name ="+"\'"+name+"\'"
-
+        query = "SELECT title FROM PUBLICATION_COMPLETE_VIEW where author_name ="+"\'"+name+"\'"
         try:
             cur.execute(query)
         except:
@@ -84,6 +91,8 @@ class DatabasePostgresql:
         rows = cur.fetchall()
         for i in rows:
             listToBeSaved.append(i[0])
+            if(test):
+                print("data: "+i[0])
         return listToBeSaved
 
 
