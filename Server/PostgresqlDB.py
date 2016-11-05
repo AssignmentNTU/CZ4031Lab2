@@ -39,6 +39,7 @@ class DatabasePostgresql:
                 for name in listName:
                     listNameToBeSaved.add(name)
                 returnDictionary[title] = listNameToBeSaved
+        return returnDictionary
 
 
 
