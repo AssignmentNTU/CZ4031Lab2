@@ -8,6 +8,7 @@ class DatabasePostgresql:
         try:
             self.conn = psycopg2.connect(database=dbName,user=dbUser,password=dbPassword,host="localhost",port=5432)
         except:
+            self.conn = None
             print "I am unable to connect to the database"
 
     def processListOfName(self,listName):
