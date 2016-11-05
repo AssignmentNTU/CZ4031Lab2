@@ -7,5 +7,6 @@ pip install requirement.txt
 
 #ON WINDOWS
 python -m pip install docutils pygments pypiwin32 kivy.deps.sdl2 kivy.deps.glew
+<br/>
 pip install requirement_windows.txt
 
