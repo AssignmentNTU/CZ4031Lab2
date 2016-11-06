@@ -4,6 +4,8 @@ current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfra
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 
+os.environ['KIVY_IMAGE'] = 'pil,sdl'
+
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
@@ -152,11 +154,9 @@ class InputAuthorNameScreen(Screen):
 		global author_list
 		if database.conn != None:
 			author_list_returned = database.processListOfName(author_list)
-			database.execute(author_list_returned)
-
 			global result_dict
-			#Temporarily hard-coded
-			result_dict = dict({"title1":["edward","sujono"],"title2":["sujono"],"title3":["martinus"]})
+			#Temporarily hard-codeds
+			result_dict = database.execute(author_list_returned)
 
 		#After connectivity is available, draw the graph
 		graph = None

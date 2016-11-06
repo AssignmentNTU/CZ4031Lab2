@@ -1,0 +1,16 @@
+cycler
+Cython
+decorator
+graphviz
+Kivy
+Kivy-Garden
+matplotlib
+networkx
+numpy
+psycopg2
+pygame
+pyparsing
+python-dateutil
+pytz
+requests
+six
