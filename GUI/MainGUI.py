@@ -2,6 +2,7 @@
 import os,sys,inspect
 import platform
 import time
+import imghdr
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
@@ -95,7 +96,6 @@ class InitializeDBScreen(Screen):
 class InputAuthorNameScreen(Screen):
 
 	def __init__(self, **kwargs):
-		self.bind(on_pre_enter=self.empty_all_entries)
 		super(InputAuthorNameScreen, self).__init__(**kwargs)
 		self.grid_layout = GridLayout(cols=2, rows=6)
 		self.add_widget(self.grid_layout)
@@ -142,26 +142,24 @@ class InputAuthorNameScreen(Screen):
 		self.btn_exit.bind(on_press=self.exit)
 		self.grid_layout.add_widget(self.btn_exit)
 
-	def empty_all_entries(self, *args):
-		self.author_1.text = ''
-		self.author_2.text = ''
-		self.author_3.text = ''
-		self.author_4.text = ''
-		self.author_5.text = ''
-		self.author_6.text = ''
-		self.author_7.text = ''
-		self.author_8.text = ''
-
 	def find_connectivity(self, *args):
+		label = Label(text="Please wait...")
+		popup = Popup(title="Loading",
+		              content=label,
+		              auto_dismiss=False,
+		              size_hint=(0.4, 0.4))
+		popup.open()
 		self.get_author_list()
 		global author_list
 		if database.conn != None:
 			#need to create view first
 			database.createPublicationCompleteView()
+			print(author_list)
 			author_list_returned = database.processListOfName(author_list)
 			global result_dict
 			#Temporarily hard-codeds
 			result_dict = database.execute(author_list_returned)
+			print(author_list_returned)
 			# database.closeDatabase()
 		#After connectivity is available, draw the graph
 		graph = None
@@ -172,6 +170,9 @@ class InputAuthorNameScreen(Screen):
 			#While until drawing is ready
 			while not os.path.exists('diagram.png'):
 				time.sleep(1)
+			while imghdr.what('diagram.png') != 'png':
+				time.sleep(1)
+			popup.dismiss()
 			screenManager.current = 'displayResultScreen'
 
 	def get_author_list(self, *args):
@@ -210,24 +211,17 @@ class DisplayResultScreen(Screen):
 		#Result image
 		self.image_result = Image(source='diagram.png', size_hint_y=0.8)
 		self.grid_layout.add_widget(self.image_result)
-		# Try again button
-		self.btn_try_again = Button(text="Try again", size_hint_y=0.1)
-		self.btn_try_again.bind(on_press=self.try_again)
-		self.grid_layout.add_widget(self.btn_try_again)
 		# Exit button
 		self.btn_exit = Button(text="Exit", size_hint_y=0.1)
 		self.btn_exit.bind(on_press=self.exit)
 		self.grid_layout.add_widget(self.btn_exit)
 
-	def try_again(self, *args):
-		try:
-			os.remove('diagram.png')
-		except OSError:
-			pass
-		screenManager.current = 'inputAuthorNameScreen'
-
 	def exit(self, *args):
 		exit()
+
+	def on_pre_enter(self, *args):
+		if self.image_result != None:
+			self.image_result.reload()
 
 #Define screen classes
 initializeDBScreen = InitializeDBScreen(name='initializeDBScreen')
@@ -248,12 +242,16 @@ class MainApp(App):
 	def on_start(self):
 		try:
 			os.remove('diagram.png')
+			while os.path.exists('diagram.png'):
+				time.sleep(1)
 		except OSError:
 			pass
 
 	def on_stop(self):
 		try:
 			os.remove('diagram.png')
+			while os.path.exists('diagram.png'):
+				time.sleep(1)
 		except OSError:
 			pass
 

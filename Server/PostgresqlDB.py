@@ -96,7 +96,7 @@ class DatabasePostgresql:
     def getListTitleForParticularAuthor(self,name,test):
         listToBeSaved = []
         cur = self.conn.cursor()
-        query = "SELECT title FROM PUBLICATION_COMPLETE_VIEW where author_name ="+"\'"+name+"\'"
+        query = "SELECT pubkey FROM PUBLICATION_COMPLETE_VIEW where author_name ="+"\'"+name+"\'"
         try:
             cur.execute(query)
         except:

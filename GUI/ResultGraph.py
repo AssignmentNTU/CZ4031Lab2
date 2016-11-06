@@ -19,16 +19,33 @@ def get_graph_of(result_dict):
 		graph.add_node(i,name=author_list[i])
 
 	#Create graph edge, one edge for each connectivity between author
-	# Also label each edge with publication title accordingly
+	# Also label each edge with publication key accordingly
 	for key in result_dict.keys():
-		publication_title = key
+		pubkey = key
 		for i in range (len(result_dict[key])):
 			involved_author = result_dict[key]
 			author1 = involved_author[i]
 			for j in range(i+1, len(involved_author)):
 				author2 = involved_author[j]
-				graph.add_edge(author_list.index(author1), author_list.index(author2), title=publication_title)
 
+				if graph.has_edge(author_list.index(author1), author_list.index(author2)):
+					#Append the next pubkey to the current pubkey
+					current_pubkey = graph[author_list.index(author1)][author_list.index(author2)]['pubkey']
+					new_pubkey = current_pubkey + ', ' + pubkey
+					graph[author_list.index(author1)][author_list.index(author2)]['pubkey'] = new_pubkey
+				else:
+					#Add new edge
+					graph.add_edge(author_list.index(author1), author_list.index(author2), pubkey=pubkey)
+				'''
+				if graph.has_edge(author_list.index(author1), author_list.index(author2)):
+					# Append the next pubkey to the current pubkey
+					current_no_of_publication = int(graph[author_list.index(author1)][author_list.index(author2)]['no_of_publication'])
+					new_no_of_publication = current_no_of_publication + 1
+					graph[author_list.index(author1)][author_list.index(author2)]['no_of_publication'] = new_no_of_publication
+				else:
+					# Add new edge
+					graph.add_edge(author_list.index(author1), author_list.index(author2), no_of_publication=1)
+				'''
 	return graph
 
 def get_drawing_of(graph):
