@@ -153,11 +153,13 @@ class InputAuthorNameScreen(Screen):
 		self.get_author_list()
 		global author_list
 		if database.conn != None:
+			#need to create view first
+			database.createPublicationCompleteView()
 			author_list_returned = database.processListOfName(author_list)
 			global result_dict
 			#Temporarily hard-codeds
 			result_dict = database.execute(author_list_returned)
-
+			# database.closeDatabase()
 		#After connectivity is available, draw the graph
 		graph = None
 		if result_dict != None:

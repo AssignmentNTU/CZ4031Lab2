@@ -18,6 +18,13 @@ class DatabasePostgresql:
             listNameReturn.append(nameChanges)
         return listNameReturn
 
+    def createPublicationCompleteView(self):
+        cur = self.conn.cursor()
+        cur.execute('''CREATE OR REPLACE VIEW PUBLICATION_COMPLETE_VIEW AS SELECT * FROM publication NATURAL JOIN pubauthor;''')
+        print "View created successfully"
+        self.conn.commit()
+
+
     #listName is all the author name that you want to search the relation on
     def execute(self,listName):
         savedDictionary = {}
@@ -39,7 +46,12 @@ class DatabasePostgresql:
                 for name in listName:
                     listNameToBeSaved.add(name)
                 returnDictionary[title] = listNameToBeSaved
-        return returnDictionary
+        realreturnDictionary = {}
+        for key in returnDictionary.keys():
+            realreturnDictionary[key] = list(returnDictionary.get(key))
+        return realreturnDictionary
+
+
 
 
 
@@ -110,3 +122,6 @@ class DatabasePostgresql:
         for i in range(startIndex,n):
             listNameAdded[current] = listName[i]
             self.searchCombination(n,r,listName,listNameAdded,i+1,current+1,arraySaved)
+
+    def closeDatabase(self):
+        self.conn.close();
