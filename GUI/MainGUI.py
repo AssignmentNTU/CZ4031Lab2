@@ -1,10 +1,13 @@
 #Needed to import Server module
 import os,sys,inspect
+import platform
+import time
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 
-os.environ['KIVY_IMAGE'] = 'pil,sdl'
+if platform.system() == 'Windows':
+	os.environ['KIVY_IMAGE'] = 'pil,sdl'
 
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
@@ -166,6 +169,9 @@ class InputAuthorNameScreen(Screen):
 			graph = Graph.get_graph_of(result_dict)
 		if graph != None:
 			Graph.get_drawing_of(graph)
+			#While until drawing is ready
+			while not os.path.exists('diagram.png'):
+				time.sleep(1)
 			screenManager.current = 'displayResultScreen'
 
 	def get_author_list(self, *args):
@@ -214,6 +220,10 @@ class DisplayResultScreen(Screen):
 		self.grid_layout.add_widget(self.btn_exit)
 
 	def try_again(self, *args):
+		try:
+			os.remove('diagram.png')
+		except OSError:
+			pass
 		screenManager.current = 'inputAuthorNameScreen'
 
 	def exit(self, *args):
@@ -234,6 +244,18 @@ class MainApp(App):
 	def build(self):
 		screenManager.current = 'initializeDBScreen'
 		return screenManager
+
+	def on_start(self):
+		try:
+			os.remove('diagram.png')
+		except OSError:
+			pass
+
+	def on_stop(self):
+		try:
+			os.remove('diagram.png')
+		except OSError:
+			pass
 
 if __name__ == '__main__':
 	MainApp().run()
