@@ -19,15 +19,18 @@ from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.image import Image
 from kivy.uix.popup import Popup
+from datetime import datetime
 
 import ResultGraph as Graph
 from Server import PostgresqlDB as DB
+from Server import SQLRely as db_sql
 
 #Initialize global variables with empty value
 database = None
 author_list = []
 result_dict = None
 graph = None
+execution_time = None
 
 #The other global variables
 screenManager = None
@@ -78,7 +81,8 @@ class InitializeDBScreen(Screen):
 		username = self.username.text
 		password = self.password.text
 		global database
-		database = DB.DatabasePostgresql(database_name, username, password)
+		# database = DB.DatabasePostgresql(database_name, username, password)
+		database = db_sql.DatabasePostgresql(database_name, username, password)
 		if database.conn != None:
 			screenManager.current = 'inputAuthorNameScreen'
 		else:
@@ -152,14 +156,19 @@ class InputAuthorNameScreen(Screen):
 		self.get_author_list()
 		global author_list
 		if database.conn != None:
+			#Mark starting time
+			start_time = datetime.now()
 			#need to create view first
 			database.createPublicationCompleteView()
 			print(author_list)
 			author_list_returned = database.processListOfName(author_list)
+			database.createViewOfTitleFromAllAuthor(author_list_returned)
 			global result_dict
-			#Temporarily hard-codeds
-			result_dict = database.execute(author_list_returned)
-			print(author_list_returned)
+			result_dict = database.execute()
+			end_time = datetime.now()
+			global execution_time
+			execution_time = end_time - start_time
+
 			# database.closeDatabase()
 		#After connectivity is available, draw the graph
 		graph = None
@@ -221,6 +230,15 @@ class DisplayResultScreen(Screen):
 
 	def on_pre_enter(self, *args):
 		if self.image_result != None:
+			global execution_time
+			execution_time_text = "Database execution took " + str(execution_time.total_seconds()) + "seconds."
+			close_btn = Button(text=execution_time_text + "\nClick to view result.")
+			popup = Popup(title="Connection error",
+			              content=close_btn,
+			              auto_dismiss=False,
+			              size_hint=(0.4, 0.4))
+			close_btn.bind(on_press=popup.dismiss)
+			popup.open()
 			self.image_result.reload()
 
 #Define screen classes

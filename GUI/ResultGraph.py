@@ -27,7 +27,7 @@ def get_graph_of(result_dict):
 			author1 = involved_author[i]
 			for j in range(i+1, len(involved_author)):
 				author2 = involved_author[j]
-
+				'''
 				if graph.has_edge(author_list.index(author1), author_list.index(author2)):
 					#Append the next pubkey to the current pubkey
 					current_pubkey = graph[author_list.index(author1)][author_list.index(author2)]['pubkey']
@@ -45,7 +45,7 @@ def get_graph_of(result_dict):
 				else:
 					# Add new edge
 					graph.add_edge(author_list.index(author1), author_list.index(author2), no_of_publication=1)
-				'''
+
 	return graph
 
 def get_drawing_of(graph):
