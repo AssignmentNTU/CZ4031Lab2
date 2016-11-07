@@ -18,6 +18,7 @@ from kivy.uix.popup import Popup
 
 import ResultGraph as Graph
 from Server import PostgresqlDB as DB
+from Server import SQLRely as db_sql
 
 #Initialize global variables with empty value
 database = None
@@ -74,7 +75,8 @@ class InitializeDBScreen(Screen):
 		username = self.username.text
 		password = self.password.text
 		global database
-		database = DB.DatabasePostgresql(database_name, username, password)
+		# database = DB.DatabasePostgresql(database_name, username, password)
+		database = db_sql.DatabasePostgresql(database_name, username, password)
 		if database.conn != None:
 			screenManager.current = 'inputAuthorNameScreen'
 		else:
@@ -154,11 +156,11 @@ class InputAuthorNameScreen(Screen):
 		global author_list
 		if database.conn != None:
 			#need to create view first
-			database.createPublicationCompleteView()
 			author_list_returned = database.processListOfName(author_list)
+			database.createViewOfTitleFromAllAuthor(author_list_returned)
 			global result_dict
 			#Temporarily hard-codeds
-			result_dict = database.execute(author_list_returned)
+			result_dict = database.execute()
 			# database.closeDatabase()
 		#After connectivity is available, draw the graph
 		graph = None

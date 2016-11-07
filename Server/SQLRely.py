@@ -27,7 +27,7 @@ class DatabasePostgresql:
         for author_name in listAuthorName:
             author_requirement += 'author_name = '+'\''+author_name+'\''+' OR '
         author_requirement = author_requirement[:-3]
-        query = "CREATE OR REPLACE VIEW PUBKEY_FROM_ALL_AUTHOR AS SELECT pubkey,author_name from PUBLICATION_COMPLETE_VIEW WHERE "+author_requirement+";"
+        query = "CREATE OR REPLACE VIEW PUBKEY_FROM_ALL_AUTHOR AS SELECT pubkey,author_name from pubauthor WHERE "+author_requirement+";"
         cur.execute(query)
         self.conn.commit()
         #then query again to get the result and buffer it to the global dictionary to be referred later
@@ -50,28 +50,31 @@ class DatabasePostgresql:
     def execute(self):
         cur = self.conn.cursor()
         dictionaryReturn = {}
-        queryToGetAllTitle = "SELECT pubkey FROM PUBKEY_FROM_ALL_AUTHOR";
+        queryToGetAllTitle = "select pubkey,a2 from ( select pubkey,author_name as a1 from pubkey_from_all_author ) as p NATURAL JOIN  (select pubkey, author_name as a2 from pubkey_from_all_author) as p2";
         try:
             cur.execute(queryToGetAllTitle)
         except:
             print("There has something error during execution")
         rows = cur.fetchall()
-        for pubkey in rows:
-            pubs = pubkey[0]
-            query = "SELECT author_name FROM PUBKEY_FROM_ALL_AUTHOR where pubkey =" + "\'" + pubs + "\'"
-            try:
-                cur.execute(query)
-            except:
-                print("There has something error during execution")
-            listAuthor = cur.fetchall()
-            listAddedAuthor = []
-            for author in listAuthor:
-                for authorInner in self.listOfAllAuthor:
-                    if(author[0] == authorInner):
-                        listAddedAuthor.append(author[0])
+        #will get list of title from here
+        for i in rows:
+            title = i[0]
+            author = i[1]
+            if(dictionaryReturn.get(title) == None):
+                set_new = set()
+                set_new.add(author)
+                dictionaryReturn[title] = set_new
+            else :
+                set_return = dictionaryReturn.get(title)
+                set_return.add(author)
+                dictionaryReturn[title] = set_return
 
-            dictionaryReturn[pubs] = listAddedAuthor
-        return dictionaryReturn
+        dictionary_real_return = {}
+        for key in  dictionaryReturn.keys():
+            list_added = list(dictionaryReturn.get(key))
+            dictionary_real_return[key] = list_added
+
+        return dictionary_real_return
 
 
     def closeDatabase(self):
