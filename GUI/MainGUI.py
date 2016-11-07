@@ -77,12 +77,14 @@ class InitializeDBScreen(Screen):
 		self.grid_layout.add_widget(self.btn_exit)
 
 	def establish_connection(self, *args):
+		host = self.database_host.text
+		port  = self.database_port.text
 		database_name = self.database_name.text
 		username = self.username.text
 		password = self.password.text
 		global database
 		# database = DB.DatabasePostgresql(database_name, username, password)
-		database = db_sql.DatabasePostgresql(database_name, username, password)
+		database = db_sql.DatabasePostgresql(database_name, username, password,localhost=host,port=port)
 		if database.conn != None:
 			screenManager.current = 'inputAuthorNameScreen'
 		else:
