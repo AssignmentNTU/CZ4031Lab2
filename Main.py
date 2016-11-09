@@ -1,19 +1,19 @@
 from Server import SQLRely
-# from GUI import MainGUI
+from datetime import datetime
 
+no_author = 2
+author_list_full = ["George Giakkoupis", "Maryam Helmi", "Lisa Higham", "Philipp Woelfel", "Jalal Kawash", "Abhijeet Pareek Pareek", "Dan Alistarh", "James Aspnes"]
+author_list = author_list_full[:no_author]
 
-#listName is the inserted name that you want to search the relation in between
-listName = ["B. O. Fagginger Auer","Rob H. Bisseling"]
-# db = PostgresqlDB.DatabasePostgresql("db","postgres","1234567890")
-# db.createPublicationCompleteView()
-# #process list name first
-# listNameReturn = db.processListOfName(listName)
-# result = db.execute(listNameReturn)
-# print (result)
-# db.closeDatabase()
-#run the GUI
-# MainGUI.MainApp.run()
-db = SQLRely.DatabasePostgresql("db","postgres","1234567890")
-listReturn = db.processListOfName(listName)
-db.createViewOfTitleFromAllAuthor(listReturn)
-db.execute()
+database = SQLRely.DatabasePostgresql("dblp_half", "postgres", "postgres",host="localhost",port=5432)
+#Mark starting time
+start_time = datetime.now()
+#need to create view first
+database.createPublicationCompleteView()
+print(author_list)
+author_list_returned = database.processListOfName(author_list)
+database.createViewOfTitleFromAllAuthor(author_list_returned)
+result_dict = database.execute()
+end_time = datetime.now()
+execution_time = end_time - start_time
+print("Execution time took " + str(execution_time.total_seconds()) + " seconds.")

@@ -170,6 +170,8 @@ class InputAuthorNameScreen(Screen):
 			end_time = datetime.now()
 			global execution_time
 			execution_time = end_time - start_time
+			print("Execution time took " + str(execution_time.total_seconds()) + " seconds.")
+
 
 			# database.closeDatabase()
 		#After connectivity is available, draw the graph
