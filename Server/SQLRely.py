@@ -5,9 +5,9 @@ import psycopg2
 class DatabasePostgresql:
 
 
-    def __init__(self,dbName,dbUser,dbPassword,localhost,port):
+    def __init__(self,dbName,dbUser,dbPassword,host,port):
         try:
-            self.conn = psycopg2.connect(host=localhost,port=port,database=dbName,user=dbUser,password=dbPassword)
+            self.conn = psycopg2.connect(host=host,port=port,database=dbName,user=dbUser,password=dbPassword)
         except:
             self.conn = None
             print "I am unable to connect to the database"
