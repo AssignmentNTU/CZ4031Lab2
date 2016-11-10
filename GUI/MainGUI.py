@@ -84,7 +84,7 @@ class InitializeDBScreen(Screen):
 		password = self.password.text
 		global database
 		# database = DB.DatabasePostgresql(database_name, username, password)
-		database = db_sql.DatabasePostgresql(database_name, username, password,localhost=host,port=port)
+		database = db_sql.DatabasePostgresql(database_name, username, password,host=host,port=port)
 		if database.conn != None:
 			screenManager.current = 'inputAuthorNameScreen'
 		else:
